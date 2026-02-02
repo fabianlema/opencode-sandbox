@@ -3,44 +3,6 @@
 # opencode_here - Helper function to run opencode in Docker sandbox
 # Usage: source this file, then run 'opencode_here' or 'oh' alias
 
-# Configuration
-OPENCODE_SANDBOX_REPO="fabianlema/opencode-sandbox"
-UPDATE_CHECK_INTERVAL=86400  # 24 hours in seconds
-
-# Check for script updates (runs in background to not block)
-__opencode_check_update() {
-  local version_file="$HOME/.config/opencode-sandbox/.version"
-  local current_time=$(date +%s)
-  local last_check=0
-  local remote_hash=""
-  
-  # Read last check timestamp
-  if [[ -f "$version_file" ]]; then
-    last_check=$(head -1 "$version_file" 2>/dev/null || echo 0)
-    remote_hash=$(tail -1 "$version_file" 2>/dev/null || echo "")
-  fi
-  
-  # Only check once per day
-  if (( current_time - last_check < UPDATE_CHECK_INTERVAL )); then
-    return 0
-  fi
-  
-  # Check remote version in background
-  (
-    local latest_hash=$(curl -s "https://api.github.com/repos/${OPENCODE_SANDBOX_REPO}/commits/main" 2>/dev/null | grep -o '"sha": "[^"]*"' | head -1 | cut -d'"' -f4)
-    if [[ -n "$latest_hash" && "$latest_hash" != "$remote_hash" ]]; then
-      echo "${current_time}" > "$version_file"
-      echo "${latest_hash}" >> "$version_file"
-      # Create marker file to show update available
-      touch "$HOME/.config/opencode-sandbox/.update-available"
-    else
-      # Update timestamp even if no new version
-      echo "${current_time}" > "$version_file"
-      [[ -n "$remote_hash" ]] && echo "${remote_hash}" >> "$version_file"
-    fi
-  ) &>/dev/null &
-}
-
 function __opencode_here() {
   # Auto-detect GitHub user/org from git remote or gh CLI
   local github_user=""
@@ -69,14 +31,6 @@ function __opencode_here() {
   local image_name="ghcr.io/${github_user}/opencode-sandbox:latest"
   local auth_config_path="$HOME/.config/opencode-sandbox"
   local history_path="$HOME/.local/share/opencode-sandbox/history"
-  
-  # Check for updates (background check starts on first load)
-  if [[ -f "$auth_config_path/.update-available" ]]; then
-    echo "⚠️  A new version of opencode-sandbox is available!"
-    echo "   Run: curl -fsSL https://raw.githubusercontent.com/${OPENCODE_SANDBOX_REPO}/main/scripts/opencode_here.sh > /tmp/opencode_here.sh && source /tmp/opencode_here.sh"
-    echo ""
-    rm -f "$auth_config_path/.update-available"
-  fi
 
   # Detect architecture
   local platform_args=()
@@ -165,6 +119,3 @@ function __opencode_here() {
 
 # Quick alias
 alias oh='__opencode_here'
-
-# Check for updates on script load (runs once per day)
-__opencode_check_update
