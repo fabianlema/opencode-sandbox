@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# GitHub
+.github
+
+# Scripts and docs
+scripts/
+*.md
+LICENSE
+
+# Local environment
+.env
+.env*
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
