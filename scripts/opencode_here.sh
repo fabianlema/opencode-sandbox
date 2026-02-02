@@ -113,7 +113,3 @@ function __opencode_here() {
 
 # Quick alias
 alias oh='__opencode_here'
-
-echo "✅ opencode_here function loaded!"
-echo "   Usage: opencode_here [arguments]"
-echo "   Alias: oh [arguments]"
