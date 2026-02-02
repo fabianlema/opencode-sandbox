@@ -29,7 +29,7 @@ opencode_here() {
     fi
     
     local image_name="ghcr.io/${github_user}/opencode-sandbox:latest"
-    local auth_config_path="$HOME/.config/opencode-container"
+    local auth_config_path="$HOME/.config/opencode-sandbox"
     
     # Detect architecture
     local platform_flag=""

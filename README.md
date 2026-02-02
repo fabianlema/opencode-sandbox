@@ -67,7 +67,7 @@ The script automatically detects your platform:
 
 The script stores opencode configuration in:
 ```
-~/.config/opencode-container/
+~/.config/opencode-sandbox/
 ```
 
 This persists authentication and settings between runs.
