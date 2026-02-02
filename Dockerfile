@@ -11,6 +11,7 @@ ARG SANDBOX_NAME="opencode-cli-sandbox"
 ENV SANDBOX="$SANDBOX_NAME"
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
 ENV PATH=$PATH:/usr/local/share/npm-global/bin
+ENV HOME=/home/node
 
 # 1. Install system packages and configure permissions in a single layer
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -37,11 +38,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /usr/local/share/npm-global \
     && chown -R node:node /usr/local/share/npm-global \
-    && mkdir -p /repo && chown node:node /repo
+    && mkdir -p /repo && chown node:node /repo \
+    && mkdir -p /home/node && chown -R node:node /home/node
 
 # 2. Switch to node user and install opencode
 USER node
 WORKDIR /repo
+
+# Pre-create directories that will be mounted
+RUN mkdir -p /home/node/.config/opencode \
+    && mkdir -p /home/node/.local/share/opencode/history \
+    && mkdir -p /home/node/.local/state
 
 RUN npm install -g opencode-ai && npm cache clean --force
 
