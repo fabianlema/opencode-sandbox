@@ -3,32 +3,12 @@
 # opencode_here - Helper function to run opencode in Docker sandbox
 # Usage: source this file, then run 'opencode_here' or 'oh' alias
 
+# Configuration - the Docker image is always hosted at fabianlema
+SANDBOX_REGISTRY_USER="fabianlema"
+SANDBOX_IMAGE_NAME="opencode-sandbox"
+
 function __opencode_here() {
-  # Auto-detect GitHub user/org from git remote or gh CLI
-  local github_user=""
-
-  # Try to get from gh CLI first
-  if command -v gh &>/dev/null; then
-    github_user=$(gh repo view --json owner --jq '.owner.login' 2>/dev/null)
-  fi
-
-  # Fallback: try to extract from git remote
-  if [[ -z "$github_user" ]]; then
-    github_user=$(git remote get-url origin 2>/dev/null | sed -n 's/.*github.com[:/]\([^/]*\).*/\1/p')
-  fi
-
-  # Final fallback: use env variable or prompt
-  if [[ -z "$github_user" ]]; then
-    if [[ -n "$GITHUB_USER" ]]; then
-      github_user="$GITHUB_USER"
-    else
-      echo "❌ Error: Could not detect GitHub username. Please set GITHUB_USER environment variable."
-      echo "   Example: export GITHUB_USER=yourusername"
-      return 1
-    fi
-  fi
-
-  local image_name="ghcr.io/${github_user}/opencode-sandbox:latest"
+  local image_name="ghcr.io/${SANDBOX_REGISTRY_USER}/${SANDBOX_IMAGE_NAME}:latest"
   local auth_config_path="$HOME/.config/opencode-sandbox"
   local history_path="$HOME/.local/share/opencode-sandbox/history"
 
@@ -70,7 +50,7 @@ function __opencode_here() {
     if ! docker image inspect "$image_name" &>/dev/null; then
       echo "❌ Error: Image not found locally or in registry"
       echo "   The GitHub Actions workflow might still be running."
-      echo "   Check status at: https://github.com/${github_user}/opencode-sandbox/actions"
+      echo "   Check status at: https://github.com/${SANDBOX_REGISTRY_USER}/${SANDBOX_IMAGE_NAME}/actions"
       return 1
     fi
   fi
