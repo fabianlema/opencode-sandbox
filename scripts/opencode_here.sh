@@ -10,7 +10,6 @@ SANDBOX_IMAGE_NAME="opencode-sandbox"
 function __opencode_here() {
   local image_name="ghcr.io/${SANDBOX_REGISTRY_USER}/${SANDBOX_IMAGE_NAME}:latest"
   local auth_config_path="$HOME/.config/opencode-sandbox"
-  local history_path="$HOME/.local/share/opencode-sandbox/history"
 
   # Detect architecture
   local platform_args=()
@@ -55,9 +54,8 @@ function __opencode_here() {
     fi
   fi
 
-  # Prepare directories
+  # Prepare auth directory
   mkdir -p "$auth_config_path"
-  mkdir -p "$history_path"
 
   # Get GitHub token
   local token=$(gh auth token 2>/dev/null)
@@ -77,22 +75,18 @@ function __opencode_here() {
       "${platform_args[@]}" \
       -v "$(pwd)":/repo \
       -v "$auth_config_path":/home/node/.config/opencode \
-      -v "$history_path":/home/node/.local/share/opencode/history \
       -e GITHUB_TOKEN="$token" \
       -e TERM="$TERM" \
       -e COLORTERM="$COLORTERM" \
-      -e OPENCODE_HISTORY_DIR=/home/node/.local/share/opencode/history \
       "$image_name"
   else
     docker run --rm -it \
       "${platform_args[@]}" \
       -v "$(pwd)":/repo \
       -v "$auth_config_path":/home/node/.config/opencode \
-      -v "$history_path":/home/node/.local/share/opencode/history \
       -e GITHUB_TOKEN="$token" \
       -e TERM="$TERM" \
       -e COLORTERM="$COLORTERM" \
-      -e OPENCODE_HISTORY_DIR=/home/node/.local/share/opencode/history \
       "$image_name" opencode "$@"
   fi
 }

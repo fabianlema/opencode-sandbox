@@ -45,10 +45,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 USER node
 WORKDIR /repo
 
-# Pre-create directories that will be mounted
-RUN mkdir -p /home/node/.config/opencode \
-    && mkdir -p /home/node/.local/share/opencode/history \
-    && mkdir -p /home/node/.local/state
+# Pre-create config directory
+RUN mkdir -p /home/node/.config/opencode
 
 RUN npm install -g opencode-ai && npm cache clean --force
 
