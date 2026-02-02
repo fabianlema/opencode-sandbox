@@ -32,16 +32,16 @@ function __opencode_here() {
   local auth_config_path="$HOME/.config/opencode-sandbox"
 
   # Detect architecture
-  local platform_flag=""
+  local platform_args=()
   local arch=$(uname -m)
   local os=$(uname -s)
 
   # On macOS with Apple Silicon, explicitly use ARM64
   if [[ "$os" == "Darwin" && "$arch" == "arm64" ]]; then
-    platform_flag="--platform linux/arm64"
+    platform_args=(--platform linux/arm64)
     echo "🍎 Detected macOS ARM64 (Apple Silicon)"
   elif [[ "$os" == "Linux" && "$arch" == "aarch64" ]]; then
-    platform_flag="--platform linux/arm64"
+    platform_args=(--platform linux/arm64)
     echo "🐧 Detected Linux ARM64"
   else
     echo "💻 Using native platform (AMD64)"
@@ -89,10 +89,10 @@ function __opencode_here() {
   echo "   Working directory: $(pwd)"
   echo ""
 
-  # Build docker run command (platform_flag must be unquoted to expand properly)
+  # Build docker run command (use array for zsh/bash compatibility)
   if [ $# -eq 0 ]; then
     docker run --rm -it \
-      $platform_flag \
+      "${platform_args[@]}" \
       -v "$(pwd)":/repo \
       -v "$auth_config_path":/home/node/.config/opencode \
       -e GITHUB_TOKEN="$token" \
@@ -101,7 +101,7 @@ function __opencode_here() {
       "$image_name"
   else
     docker run --rm -it \
-      $platform_flag \
+      "${platform_args[@]}" \
       -v "$(pwd)":/repo \
       -v "$auth_config_path":/home/node/.config/opencode \
       -e GITHUB_TOKEN="$token" \
