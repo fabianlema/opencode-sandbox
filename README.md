@@ -9,6 +9,8 @@ Docker sandbox environment for running [opencode](https://opencode.ai) AI agents
 - **Secure**: Runs as non-root user (`node`)
 - **GHCR hosted**: Published to GitHub Container Registry
 
+> **Note**: Daily automated builds were removed since Docker Desktop now natively supports creating OpenCode sandboxes.
+
 ## Quick Start
 
 ### 1. Install the helper function
