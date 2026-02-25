@@ -3,9 +3,6 @@ name: Docker Build & Publish
 on:
   push:
     branches: [ "main" ]
-  schedule:
-    # Rebuild daily at 3:00 AM UTC to get latest opencode version
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 env:
